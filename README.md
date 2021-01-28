@@ -5,3 +5,6 @@ Mini-bibliotek för primitiva matris-operationer skrivet i Rust.
 - Ökad funktionalitet
   - [x] Transponering
   - [ ] Invers
+- [ ] Egenskaper för olika typer av matriser
+- [ ] Organisera koden
+- [ ] Dokumentera
