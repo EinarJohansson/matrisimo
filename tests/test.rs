@@ -103,4 +103,21 @@ mod tests {
         assert_eq!(p.matris, pq_svar);
         assert_eq!(a.matris, ab_svar);
     }
+
+    #[test]
+    fn transponera_matris() {
+        use matrisimo::Operationer;
+        
+        let p: Vec<Vec<i32>> = vec![vec![1, 2], vec![3,4], vec![5, 6]]; 
+        let p_transponerad: Vec<Vec<i32>> = vec![vec![1, 3, 5], vec![2, 4, 6]]; 
+
+        let mut p = matrisimo::Matris::new(&p);
+
+        println!("P: {:?}", p);
+        p.tranponera();
+
+        println!("P transponerad: {:?}", p);
+
+        assert_eq!(p.matris, p_transponerad);
+    }
 }

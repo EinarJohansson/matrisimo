@@ -33,11 +33,16 @@ impl<T: Num + Clone> Matris<T>{
 }
 
 pub trait Operationer<T: Num> {
-    fn addera(&mut self, matris: &Matris<T>) where T: std::ops::AddAssign + Copy;
-    fn subtrahera(&mut self, matris: &Matris<T>) where T: std::ops::SubAssign + Copy;
-    fn multiplicera_skalar(&mut self, skalar: &T) where T: std::ops::MulAssign + Copy;
+    fn addera(&mut self, matris: &Matris<T>)
+        where T: std::ops::AddAssign + Copy;
+    fn subtrahera(&mut self, matris: &Matris<T>)
+        where T: std::ops::SubAssign + Copy;
+    fn multiplicera_skalar(&mut self, skalar: &T) 
+        where T: std::ops::MulAssign + Copy;
     fn multiplicera_matris(&mut self, matris: &Matris<T>)
-    where T: Zero + std::ops::AddAssign + std::ops::Mul + Copy;
+        where T: Zero + std::ops::AddAssign + std::ops::Mul + Copy;
+    fn tranponera(&mut self)
+        where T: Zero + Clone + Copy;
 }
 
 impl<T: Num> Operationer<T> for Matris<T> {
@@ -82,6 +87,17 @@ impl<T: Num> Operationer<T> for Matris<T> {
                     summa += self.matris[i][k] * matris.matris[k][j];
                 }
                 c[i][j] = summa;
+            }
+        }
+        *self = Matris::new(&c);
+    }
+
+    fn tranponera(&mut self) where T: Zero + Clone + Copy,  {
+        let mut c = vec![vec![T::zero(); self.form.0]; self.form.1];
+        
+        for i in 0..self.form.0 {
+            for j in 0..self.form.1 {
+                c[j][i] = self.matris[i][j]
             }
         }
         *self = Matris::new(&c);
