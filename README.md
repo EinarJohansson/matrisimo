@@ -1,6 +1,6 @@
 # matrisimo
 Mini-bibliotek för primitiva matris-operationer skrivet i Rust.
-##TODO
+## TODO
 - [x] Implementera funktioner för generiska matriser
 - Ökad funktionalitet
   - [ ] Transponering
