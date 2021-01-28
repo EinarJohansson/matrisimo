@@ -2,93 +2,105 @@
 mod tests {
     #[test]
     fn skapa_matriser() {
-        let x = vec![vec![1,2,3], vec![4,5,6]];
-        let y = vec![vec![2,4,2,1], vec![1,2,2,1],vec![2,2,2,1], vec![2,2,2,1]];
-
-        let m1 = matrisimo::Matris::new(x); // x invalid nu 
-        let m2 = matrisimo::Matris::new(y); // y invalid nu
-
-        println!("{:?}", m1);
-        println!("{:?}", m2);
-
-        assert_eq!(m1.form, (2,3));
-        assert_eq!(m2.form, (4, 4));
-
-        assert_eq!(m1.egenskaper.unwrap().contains(&matrisimo::Egenskaper::Rektangel), true);
-        assert_eq!(m2.egenskaper.unwrap().contains(&matrisimo::Egenskaper::Kvadtrat), true);
+        let p: Vec<Vec<u8>> = vec![vec![2, 5, 3], vec![9, 8, 7]];
+        let q: Vec<Vec<i32>> = vec![vec![-1, -5, 1], vec![4, 1, 0]]; 
+        let a: Vec<Vec<f32>> = vec![vec![1.1, 3.2]];
+        let b: Vec<Vec<f64>> = vec![vec![3.0, 4.2]];
+    
+        let p = matrisimo::Matris::new(&p);
+        let q = matrisimo::Matris::new(&q);
+        let a = matrisimo::Matris::new(&a);
+        let b = matrisimo::Matris::new(&b);
+        
+        assert_eq!(p.form, (2, 3));
+        assert_eq!(q.form, (2, 3));
+        assert_eq!(a.form, (1, 2));
+        assert_eq!(b.form, (1, 2));
     }
-
     #[test]
     fn addera_matriser() {
-        let x = vec![vec![1, 2, 3], vec![4, 5, 6]];
-        let y = vec![vec![2, 4, 2], vec![1, 4, 6]];
-        let svar = vec![vec![3, 6, 5], vec![5, 9, 12]];
+        use matrisimo::Operationer;
 
-        let mut m1 = matrisimo::Matris::new(x); // x invalid nu 
-        let m2 = matrisimo::Matris::new(y);     // y invalid nu
+        let p: Vec<Vec<i32>> = vec![vec![2, 5, 3], vec![9, 8, 7]];
+        let q: Vec<Vec<i32>> = vec![vec![-1, -5, 1], vec![4, 1, 0]]; 
+        let pq_svar: Vec<Vec<i32>> = vec![vec![1, 0, 4], vec![13, 9, 7]];
 
-        println!("{:?}", m1);
-        println!("{:?}", m2);
+        let mut p = matrisimo::Matris::new(&p);
+        let q = matrisimo::Matris::new(&q);
+        
+        println!("P är lika med: {:?}", p);
+        println!("Q är lika med: {:?}", q);
+        p.addera(&q);
+        println!("P+Q är lika med: {:?}", p);
 
-        m1.addera(&m2);
-
-        println!("{:?}", m1);
-
-        assert_eq!(m1.matris, svar);
+        assert_eq!(p.matris, pq_svar);
     }
 
     #[test]
     fn subtrahera_matriser() {
-        let x = vec![vec![1, 2], vec![4, 5]];
-        let y = vec![vec![2, 4], vec![1, 4]];
-        let svar = vec![vec![-1, -2], vec![3, 1]];
+        use matrisimo::Operationer;
 
-        let mut m1 = matrisimo::Matris::new(x); // x invalid nu 
-        let m2 = matrisimo::Matris::new(y);     // y invalid nu
+        let p: Vec<Vec<i32>> = vec![vec![2, 5, 3], vec![9, 8, 7]];
+        let q: Vec<Vec<i32>> = vec![vec![-1, -5, 1], vec![4, 1, 0]]; 
+        let pq_svar: Vec<Vec<i32>> = vec![vec![3, 10, 2], vec![5, 7, 7]];
 
-        println!("{:?}", m1);
-        println!("{:?}", m2);
+        let mut p = matrisimo::Matris::new(&p);
+        let q = matrisimo::Matris::new(&q);
+        
+        println!("P är lika med: {:?}", p);
+        println!("Q är lika med: {:?}", q);
+        p.subtrahera(&q);
+        println!("P-Q är lika med: {:?}", p);
 
-        m1.subtrahera(&m2);
-
-        println!("{:?}", m1);
-
-        assert_eq!(m1.matris, svar);
+        assert_eq!(p.matris, pq_svar);
     }
 
     #[test]
-    fn skalar_multiplikation() {
-        let x = vec![vec![1, 2], vec![4, 5]];
-        let svar = vec![vec![10, 20], vec![40, 50]];
-        
-        let mut m1 = matrisimo::Matris::new(x); // x invalid nu 
+    fn multiplicera_matris_skalar() {
+        use matrisimo::Operationer;
 
-        println!("{:?}", m1);
+        let p: Vec<Vec<i32>> = vec![vec![2, 5, 3], vec![9, 8, 7]];
+        const Q:i32 = 34;
+        let pq_svar: Vec<Vec<i32>> = vec![vec![68, 170, 102], vec![306, 272, 238]];
 
-        m1.muiplicera_skalar(10);
+        let mut p = matrisimo::Matris::new(&p);
 
-        println!("{:?}", m1);
+        println!("P är lika med: {:?}", p);
+        println!("Q är lika med: {:?}", Q);
+        p.multiplicera_skalar(&Q);
+        println!("P*Q är lika med: {:?}", p);
 
-        assert_eq!(m1.matris, svar);
+        assert_eq!(p.matris, pq_svar);
     }
 
     #[test]
     fn multiplicera_matriser() {
-        let a = vec![vec![1, 3], vec![4, -1], vec![-5, 10]];
-        let b = vec![vec![2, 1], vec![-8, 6]];
+        use matrisimo::Operationer;
         
-        let svar = vec![vec![-22, 19], vec![16, -2], vec![-90, 55]];
+        let p: Vec<Vec<f64>> = vec![vec![2.0, 5.0], vec![2.0, 2.0]];
+        let q: Vec<Vec<f64>> = vec![vec![1.0, 2.0, 1.0], vec![1.0, 1.0, 0.0]]; 
+        let pq_svar: Vec<Vec<f64>> = vec![vec![7.0, 9.0, 2.0], vec![4.0, 6.0, 2.0]];
 
-        let mut m1 = matrisimo::Matris::new(a); // x invalid nu 
-        let m2 = matrisimo::Matris::new(b); // y invalid nu 
+        let a: Vec<Vec<i32>> = vec![vec![2, 5], vec![9, 8]];
+        let b: Vec<Vec<i32>> = vec![vec![-1, -5, 1], vec![4, 1, 0]]; 
+        let ab_svar: Vec<Vec<i32>> = vec![vec![18, -5, 2], vec![23, -37, 9]];
+        
+        let mut p = matrisimo::Matris::new(&p);
+        let q = matrisimo::Matris::new(&q);
 
-        println!("{:?}", m1);
-        println!("{:?}", m2);
+        let mut a= matrisimo::Matris::new(&a);
+        let b = matrisimo::Matris::new(&b);
 
-        m1.multiplicera(&m2);
+        println!("P är lika med: {:?}", p);
+        println!("A är lika med: {:?}", a);
 
-        println!("{:?}", m1);
+        p.multiplicera_matris(&q);
+        a.multiplicera_matris(&b);
 
-        assert_eq!(m1.matris, svar);
+        println!("P är nu lika med: {:?}", p);
+        println!("A är nu lika med: {:?}", a);
+
+        assert_eq!(p.matris, pq_svar);
+        assert_eq!(a.matris, ab_svar);
     }
 }
