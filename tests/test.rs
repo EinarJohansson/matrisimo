@@ -114,10 +114,26 @@ mod tests {
         let mut p = matrisimo::Matris::new(&p);
 
         println!("P: {:?}", p);
-        p.tranponera();
+        p.transponera();
 
         println!("P transponerad: {:?}", p);
 
         assert_eq!(p.matris, p_transponerad);
+    }
+
+    #[test]
+    fn enhets_matris(){
+        use matrisimo::Funktioner;
+        
+        let p: Vec<Vec<i32>> = vec![vec![1, 2, 3], vec![3,4,1], vec![5, 6,2]];
+        let p = matrisimo::Matris::new(&p);
+        let svar = vec![vec![1, 0, 0], vec![0, 1, 0], vec![0, 0, 1]];
+        println!("P: {:?}", p);
+        
+        let p_enhets_matris = matrisimo::Matris::enhets_matris(&p);
+
+        println!("P enhetsmatris: {:?}", p_enhets_matris);
+
+        assert_eq!(p_enhets_matris.matris, svar);
     }
 }
