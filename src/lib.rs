@@ -49,9 +49,11 @@ impl<T: Num + Clone> Matris<T>{
     }
 }
 
-pub trait Funktioner<T: Num>{
+pub trait Funktioner<T: Num> {
     fn enhets_matris(matris: &Matris<T>) -> Matris<T>
         where T: Zero + One + Copy;
+    fn transponera(matris: &Matris<T>) -> Matris<T>
+        where T: Zero + Copy;
 }
 
 pub trait Operationer<T: Num> {
@@ -63,8 +65,7 @@ pub trait Operationer<T: Num> {
         where T: std::ops::MulAssign + Copy;
     fn multiplicera_matris(&mut self, matris: &Matris<T>)
         where T: Zero + std::ops::AddAssign + std::ops::Mul + Copy;
-    fn transponera(&mut self)
-        where T: Zero + Copy;
+
 }
 
 impl<T: Num> Operationer<T> for Matris<T> {
@@ -113,18 +114,6 @@ impl<T: Num> Operationer<T> for Matris<T> {
         }
         *self = Matris::new(&c);
     }
-
-    fn transponera(&mut self) 
-    where T: Zero + Copy, {
-        let mut c = vec![vec![T::zero(); self.form.0]; self.form.1];
-        
-        for i in 0..self.form.0 {
-            for j in 0..self.form.1 {
-                c[j][i] = self.matris[i][j]
-            }
-        }
-        *self = Matris::new(&c);
-    }
 }
 
 impl<T: Num> Funktioner<T> for Matris<T> {
@@ -142,5 +131,17 @@ impl<T: Num> Funktioner<T> for Matris<T> {
             }
         }
         Matris::new(&enhets_matris)
+    }
+
+    fn transponera(matris: &Matris<T>) -> Matris<T>
+    where T: Zero + Copy, {
+        let mut c = vec![vec![T::zero(); matris.form.0]; matris.form.1];
+        
+        for i in 0..matris.form.0 {
+            for j in 0..matris.form.1 {
+                c[j][i] = matris.matris[i][j]
+            }
+        }
+        Matris::new(&c)
     }
 }

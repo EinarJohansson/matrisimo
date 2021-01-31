@@ -106,19 +106,19 @@ mod tests {
 
     #[test]
     fn transponera_matris() {
-        use matrisimo::Operationer;
+        use matrisimo::Funktioner;
         
         let p: Vec<Vec<i32>> = vec![vec![1, 2], vec![3,4], vec![5, 6]]; 
         let p_transponerad: Vec<Vec<i32>> = vec![vec![1, 3, 5], vec![2, 4, 6]]; 
 
-        let mut p = matrisimo::Matris::new(&p);
+        let p = matrisimo::Matris::new(&p);
 
         println!("P: {:?}", p);
-        p.transponera();
+        let transponant = matrisimo::Matris::transponera(&p);
 
         println!("P transponerad: {:?}", p);
 
-        assert_eq!(p.matris, p_transponerad);
+        assert_eq!(transponant.matris, p_transponerad);
     }
 
     #[test]
