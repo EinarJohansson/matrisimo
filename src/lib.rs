@@ -53,7 +53,7 @@ pub trait Funktioner<T: Num> {
         where T: Zero + One + Copy;
     fn transponera(matris: &Matris<T>) -> Matris<T>
         where T: Zero + Copy;
-    fn determinant(matris: &Matris<T>, rang: usize) -> T
+    fn determinant(matris: &Matris<T>) -> T
         where T: Zero + One + AddAssign + Mul + Copy+ Neg<Output=T>;
     fn adjunkt(matris:  &Matris<T>) -> Matris<T>
         where T: Zero + One + Copy + AddAssign + Mul+ Neg<Output=T>;
@@ -148,10 +148,11 @@ impl<T: Num> Funktioner<T> for Matris<T> {
     }
 
     // Ta bort rang parameter
-    fn determinant(matris:  &Matris<T>, rang: usize) -> T
+    fn determinant(matris:  &Matris<T>) -> T
     where T: Zero + One + Copy + AddAssign + Mul+ Neg<Output=T> {
         assert!(matris.egenskaper.contains(&Egenskaper::Kvadrat));
-        
+        let rang = matris.form.0;
+
         match rang {
             1 => matris.matris[0][0],
             2 => matris.matris[0][0] * matris.matris[1][1] - matris.matris[1][0] * matris.matris[0][1],
@@ -174,7 +175,7 @@ impl<T: Num> Funktioner<T> for Matris<T> {
                     }
                     let temp = Matris::new(&temp);
 
-                    d += pow(-T::one(), x) * matris.matris[0][x] * Matris::determinant(&temp, rang - 1);
+                    d += pow(-T::one(), x) * matris.matris[0][x] * Matris::determinant(&temp);
                 }
                 d
             }
@@ -226,7 +227,7 @@ impl<T: Num> Funktioner<T> for Matris<T> {
                         };
                         
                         let augmenterad = Matris::new(&augmenterad);
-                        adjunkt[kol_j][rad_i] = sign * Matris::determinant(&augmenterad, rang-1);
+                        adjunkt[kol_j][rad_i] = sign * Matris::determinant(&augmenterad);
                     }
                 }
                 Matris::new(&adjunkt)

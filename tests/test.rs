@@ -153,7 +153,7 @@ mod tests {
         let p = matrisimo::Matris::new(&p);
         let rang = p.form.0;
 
-        let determinant = matrisimo::Matris::determinant(&p, rang);
+        let determinant = matrisimo::Matris::determinant(&p);
 
         println!("deterimnanten är lika med {}", determinant);
         println!("{:?}", p);
