@@ -122,7 +122,7 @@ mod tests {
     }
 
     #[test]
-    fn enhets_matris(){
+    fn enhets_matris() {
         use matrisimo::Funktioner;
         
         let p: Vec<Vec<i32>> = vec![vec![1, 2, 3], vec![3,4,1], vec![5, 6,2]];
@@ -136,4 +136,28 @@ mod tests {
 
         assert_eq!(p_enhets_matris.matris, svar);
     }
+
+    #[test]
+    fn determinant() { 
+        use matrisimo::Funktioner;
+
+        let p: Vec<Vec<i32>> = vec![
+            vec![1, 3, 5, 9],
+            vec![1, 3, 1, 7],
+            vec![4, 3, 9, 7],
+            vec![5, 2, 0, 9]
+        ];
+
+        let svar = -376;
+
+        let p = matrisimo::Matris::new(&p);
+        let rang = p.form.0;
+
+        let determinant = matrisimo::Matris::determinant(&p, rang);
+
+        println!("deterimnanten är lika med {}", determinant);
+
+        assert_eq!(determinant, svar);
+    }
+
 }

@@ -1,6 +1,5 @@
-use num::Num;
-use num::Zero;
-use num::One;
+use num::{Num, Zero, One, pow};
+use std::ops::{Neg, AddAssign, Mul, MulAssign, SubAssign};
 
 #[derive(Debug, PartialEq)]
 pub enum Egenskaper{
@@ -54,23 +53,24 @@ pub trait Funktioner<T: Num> {
         where T: Zero + One + Copy;
     fn transponera(matris: &Matris<T>) -> Matris<T>
         where T: Zero + Copy;
+    fn determinant(matris: &Matris<T>, rang: usize) -> T
+        where T: Zero + One + AddAssign + Mul + Copy+ Neg<Output=T>;
 }
 
 pub trait Operationer<T: Num> {
     fn addera(&mut self, matris: &Matris<T>)
-        where T: std::ops::AddAssign + Copy;
+        where T: AddAssign + Copy;
     fn subtrahera(&mut self, matris: &Matris<T>)
-        where T: std::ops::SubAssign + Copy;
+        where T: SubAssign + Copy;
     fn multiplicera_skalar(&mut self, skalar: &T) 
-        where T: std::ops::MulAssign + Copy;
+        where T: MulAssign + Copy;
     fn multiplicera_matris(&mut self, matris: &Matris<T>)
-        where T: Zero + std::ops::AddAssign + std::ops::Mul + Copy;
-
+        where T: Zero + AddAssign + Mul + Copy;
 }
 
 impl<T: Num> Operationer<T> for Matris<T> {
     fn addera(&mut self, matris: &Matris<T>) 
-    where T: std::ops::AddAssign + Copy,{
+    where T: AddAssign + Copy,{
         for (i, rad) in self.matris.iter_mut().enumerate() {
             for (j, kol) in rad.iter_mut().enumerate() {
                 *kol += matris.matris[i][j];
@@ -79,7 +79,7 @@ impl<T: Num> Operationer<T> for Matris<T> {
     }
     
     fn subtrahera(&mut self, matris: &Matris<T>)
-    where T: std::ops::SubAssign + Copy,{
+    where T: SubAssign + Copy,{
         for (i, rad) in self.matris.iter_mut().enumerate() {
             for (j, kol) in rad.iter_mut().enumerate() {
                 *kol -= matris.matris[i][j];
@@ -88,7 +88,7 @@ impl<T: Num> Operationer<T> for Matris<T> {
     }
     
     fn multiplicera_skalar(&mut self, skalar: &T)
-    where T: std::ops::MulAssign + Copy,{
+    where T: MulAssign + Copy,{
         for rad in self.matris.iter_mut() {
             for kol in rad.iter_mut() {
                 *kol *= *skalar;
@@ -97,7 +97,7 @@ impl<T: Num> Operationer<T> for Matris<T> {
     }
 
     fn multiplicera_matris(&mut self, matris: &Matris<T>)
-    where T: Zero + std::ops::AddAssign +std::ops::Mul + Copy {
+    where T: Zero + AddAssign +Mul + Copy {
         assert_eq!(self.form.1, matris.form.0);
 
         let (n, p) = (self.form.0, matris.form.1);
@@ -143,5 +143,38 @@ impl<T: Num> Funktioner<T> for Matris<T> {
             }
         }
         Matris::new(&c)
+    }
+
+    fn determinant(matris:  &Matris<T>, rang: usize) -> T
+    where T: Zero + One + Copy + AddAssign + Mul+ Neg<Output=T> {
+        assert!(matris.egenskaper.contains(&Egenskaper::Kvadrat));
+        
+        let mut d = T::zero();
+        let mut temp = vec![vec![T::zero(); rang]; rang];
+
+        match rang {
+            1 => matris.matris[0][0],
+            2 => matris.matris[0][0] * matris.matris[1][1] - matris.matris[1][0] * matris.matris[0][1],
+            _=> {
+                for x in 0..rang {
+                    let mut subi = 0;
+                    for i in 1..rang {
+                        let mut subj = 0;
+                        for j in 0..rang {
+                            if j == x {
+                                continue;
+                            }
+                            temp[subi][subj] = matris.matris[i][j];
+                            subj += 1;
+                        }
+                        subi += 1;
+                    }
+                    let temp = Matris::new(&temp);
+
+                    d += pow(-T::one(), x) * matris.matris[0][x] * Matris::determinant(&temp, rang - 1);
+                }
+                d
+            }
+        }
     }
 }
