@@ -55,6 +55,8 @@ pub trait Funktioner<T: Num> {
         where T: Zero + Copy;
     fn determinant(matris: &Matris<T>, rang: usize) -> T
         where T: Zero + One + AddAssign + Mul + Copy+ Neg<Output=T>;
+    fn adjunkt(matris:  &Matris<T>) -> Matris<T>
+        where T: Zero + One + Copy + AddAssign + Mul+ Neg<Output=T>;
 }
 
 pub trait Operationer<T: Num> {
@@ -145,17 +147,18 @@ impl<T: Num> Funktioner<T> for Matris<T> {
         Matris::new(&c)
     }
 
+    // Ta bort rang parameter
     fn determinant(matris:  &Matris<T>, rang: usize) -> T
     where T: Zero + One + Copy + AddAssign + Mul+ Neg<Output=T> {
         assert!(matris.egenskaper.contains(&Egenskaper::Kvadrat));
         
-        let mut d = T::zero();
-        let mut temp = vec![vec![T::zero(); rang]; rang];
-
         match rang {
             1 => matris.matris[0][0],
             2 => matris.matris[0][0] * matris.matris[1][1] - matris.matris[1][0] * matris.matris[0][1],
             _=> {
+                let mut d = T::zero();
+                let mut temp = vec![vec![T::zero(); rang-1]; rang-1];
+
                 for x in 0..rang {
                     let mut subi = 0;
                     for i in 1..rang {
@@ -174,6 +177,59 @@ impl<T: Num> Funktioner<T> for Matris<T> {
                     d += pow(-T::one(), x) * matris.matris[0][x] * Matris::determinant(&temp, rang - 1);
                 }
                 d
+            }
+        }
+    }
+
+    fn adjunkt(matris: &Matris<T>) -> Matris<T>
+    where T: Zero + One + Copy + AddAssign + Mul+ Neg<Output=T> {
+        assert!(matris.egenskaper.contains(&Egenskaper::Kvadrat));
+
+        let rang = matris.form.0;
+
+        match rang {
+            1 => {
+                let adjunkt = vec![vec![T::one()]];
+                Matris::new(&adjunkt)
+            },
+            2 => {
+                let adjunkt = vec![vec![matris.matris[1][1], -matris.matris[0][1]], vec![-matris.matris[1][0], matris.matris[0][0]]];
+                Matris::new(&adjunkt)
+            },
+            _ => {
+                let mut augmenterad = vec![vec![T::zero(); rang-1]; rang-1];
+                let mut adjunkt = vec![vec![T::zero(); rang]; rang];
+
+                for rad_i in 0..rang {
+                    for kol_j in 0..rang {
+
+                        let mut i_sub = 0;
+                        let mut j_sub = 0; 
+                        
+                        for rad in 0..rang {
+                            for kol in 0..rang {
+                                if rad != rad_i && kol != kol_j {
+                                    augmenterad[i_sub][j_sub] = matris.matris[rad][kol]; 
+                                    j_sub += 1;
+    
+                                    if j_sub == rang -1 { 
+                                        j_sub = 0; 
+                                        i_sub += 1; 
+                                    }
+                                } 
+                            }
+                        }
+
+                        let sign = match rad_i + kol_j {
+                            s if s % 2 == 0 => T::one(),
+                            _=> -T::one()
+                        };
+                        
+                        let augmenterad = Matris::new(&augmenterad);
+                        adjunkt[kol_j][rad_i] = sign * Matris::determinant(&augmenterad, rang-1);
+                    }
+                }
+                Matris::new(&adjunkt)
             }
         }
     }

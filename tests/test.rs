@@ -156,8 +156,33 @@ mod tests {
         let determinant = matrisimo::Matris::determinant(&p, rang);
 
         println!("deterimnanten är lika med {}", determinant);
-
+        println!("{:?}", p);
+        
         assert_eq!(determinant, svar);
     }
 
+    #[test]
+    fn adjunkt() {
+        use matrisimo::Funktioner;
+
+        let p: Vec<Vec<i32>> = vec![
+            vec![-3, 2, -5],
+            vec![-1, 0, -2],
+            vec![3, -4, 1]
+        ];
+
+        let svar = vec![
+            vec![-8, 18, -4],
+            vec![-5, 12, -1],
+            vec![4, -6, 2]
+        ];
+
+        let p = matrisimo::Matris::new(&p);
+        let svar = matrisimo::Matris::new(&svar);
+
+        let p = matrisimo::Matris::adjunkt(&p);
+        println!("{:?}", p);
+
+        assert_eq!(p.matris, svar.matris);
+    }
 }
