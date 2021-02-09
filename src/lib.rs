@@ -1,5 +1,5 @@
-use num::{Num, Zero, One, pow};
-use std::ops::{Neg, AddAssign, Mul, MulAssign, SubAssign};
+use num::{Num, Zero, One, pow, Float};
+use std::ops::{Neg, AddAssign, Mul, SubAssign, Div};
 
 #[derive(Debug, PartialEq)]
 pub enum Egenskaper{
@@ -57,6 +57,8 @@ pub trait Funktioner<T: Num> {
         where T: Zero + One + AddAssign + Mul + Copy+ Neg<Output=T>;
     fn adjunkt(matris:  &Matris<T>) -> Matris<T>
         where T: Zero + One + Copy + AddAssign + Mul+ Neg<Output=T>;
+    fn invertera(matris:  &Matris<T>) -> Matris<T>
+        where T: Float + Zero + One + Copy + AddAssign + Mul+ Neg<Output=T> + Div<T>;
 }
 
 pub trait Operationer<T: Num> {
@@ -65,14 +67,14 @@ pub trait Operationer<T: Num> {
     fn subtrahera(&mut self, matris: &Matris<T>)
         where T: SubAssign + Copy;
     fn multiplicera_skalar(&mut self, skalar: &T) 
-        where T: MulAssign + Copy;
+        where T: Mul<Output = T> + Copy;
     fn multiplicera_matris(&mut self, matris: &Matris<T>)
         where T: Zero + AddAssign + Mul + Copy;
 }
 
 impl<T: Num> Operationer<T> for Matris<T> {
     fn addera(&mut self, matris: &Matris<T>) 
-    where T: AddAssign + Copy,{
+    where T: AddAssign + Copy, {
         for (i, rad) in self.matris.iter_mut().enumerate() {
             for (j, kol) in rad.iter_mut().enumerate() {
                 *kol += matris.matris[i][j];
@@ -81,7 +83,7 @@ impl<T: Num> Operationer<T> for Matris<T> {
     }
     
     fn subtrahera(&mut self, matris: &Matris<T>)
-    where T: SubAssign + Copy,{
+    where T: SubAssign + Copy, {
         for (i, rad) in self.matris.iter_mut().enumerate() {
             for (j, kol) in rad.iter_mut().enumerate() {
                 *kol -= matris.matris[i][j];
@@ -90,10 +92,10 @@ impl<T: Num> Operationer<T> for Matris<T> {
     }
     
     fn multiplicera_skalar(&mut self, skalar: &T)
-    where T: MulAssign + Copy,{
+    where T: Mul<Output = T> + Copy,{
         for rad in self.matris.iter_mut() {
             for kol in rad.iter_mut() {
-                *kol *= *skalar;
+                *kol = *kol * *skalar;
             }
         }
     }
@@ -118,7 +120,7 @@ impl<T: Num> Operationer<T> for Matris<T> {
     }
 }
 
-impl<T: Num> Funktioner<T> for Matris<T> {
+impl<T: Num + std::fmt::Debug> Funktioner<T> for Matris<T> {
     fn enhets_matris(matris: &Matris<T>) -> Matris<T>
     where T: Zero + One + Copy, {
         assert!(matris.egenskaper.contains(&Egenskaper::Kvadrat));
@@ -147,7 +149,6 @@ impl<T: Num> Funktioner<T> for Matris<T> {
         Matris::new(&c)
     }
 
-    // Ta bort rang parameter
     fn determinant(matris:  &Matris<T>) -> T
     where T: Zero + One + Copy + AddAssign + Mul+ Neg<Output=T> {
         assert!(matris.egenskaper.contains(&Egenskaper::Kvadrat));
@@ -183,7 +184,7 @@ impl<T: Num> Funktioner<T> for Matris<T> {
     }
 
     fn adjunkt(matris: &Matris<T>) -> Matris<T>
-    where T: Zero + One + Copy + AddAssign + Mul+ Neg<Output=T> {
+    where T: Zero + One + Copy + AddAssign + Mul + Neg<Output=T> {
         assert!(matris.egenskaper.contains(&Egenskaper::Kvadrat));
 
         let rang = matris.form.0;
@@ -233,5 +234,21 @@ impl<T: Num> Funktioner<T> for Matris<T> {
                 Matris::new(&adjunkt)
             }
         }
+    }
+
+    fn invertera(matris:  &Matris<T>) -> Matris<T>
+    where T: Float + Zero + One + Copy + AddAssign + Mul + Div<T> + Neg<Output=T> {
+        assert!(matris.egenskaper.contains(&Egenskaper::Kvadrat));
+        
+        let d = Matris::determinant(&matris);
+        assert_ne!(d, T::zero());
+
+        let mut adjunkt = Matris::adjunkt(&matris);
+
+        let d_inv = T::one()/d;
+
+        adjunkt.multiplicera_skalar(&d_inv);
+
+        adjunkt
     }
 }

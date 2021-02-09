@@ -151,7 +151,6 @@ mod tests {
         let svar = -376;
 
         let p = matrisimo::Matris::new(&p);
-        let rang = p.form.0;
 
         let determinant = matrisimo::Matris::determinant(&p);
 
@@ -184,5 +183,28 @@ mod tests {
         println!("{:?}", p);
 
         assert_eq!(p.matris, svar.matris);
+    }
+
+    #[test]
+    fn invertera() {
+        use matrisimo::Funktioner;
+
+        let p: Vec<Vec<f64>> = vec![
+            vec![1.0,   2.0,    3.0],
+            vec![4.0,   5.0,    6.0],
+            vec![7.0,   2.0,    9.0]
+        ];
+
+        let svar: Vec<Vec<f64>> = vec![
+            vec![-11.0/12.0,    1.0/3.0,    1.0/12.0],
+            vec![-1.0/6.0,      1.0/3.0,    -1.0/6.0],
+            vec![3.0/4.0,       -1.0/3.0,   1.0/12.0]
+        ];
+
+        let p = matrisimo::Matris::new(&p);
+
+        let invert = matrisimo::Matris::invertera(&p);
+
+        assert_eq!(invert.matris, svar);
     }
 }
